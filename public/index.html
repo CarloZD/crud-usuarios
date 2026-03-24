@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRUD Usuarios</title>
+</head>
+<body>
+
+<h2>CRUD Usuarios</h2>
+
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="correo" placeholder="Correo">
+<button onclick="crearUsuario()">Agregar</button>
+
+<ul id="lista"></ul>
+
+<script>
+const API = "/usuarios";
+
+// LISTAR
+function cargarUsuarios() {
+  fetch(API)
+    .then(res => res.json())
+    .then(data => {
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "";
+      data.forEach(u => {
+        lista.innerHTML += `
+          <li>
+            ${u.nombre} - ${u.correo}
+            <button onclick="eliminar(${u.id})">X</button>
+          </li>
+        `;
+      });
+    });
+}
+
+// CREAR
+function crearUsuario() {
+  const nombre = document.getElementById("nombre").value;
+  const correo = document.getElementById("correo").value;
+
+  fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nombre, correo })
+  }).then(() => {
+    cargarUsuarios();
+  });
+}
+
+// ELIMINAR
+function eliminar(id) {
+  fetch(API + "/" + id, { method: "DELETE" })
+    .then(() => cargarUsuarios());
+}
+
+// INICIO
+cargarUsuarios();
+</script>
+
+</body>
+</html>
